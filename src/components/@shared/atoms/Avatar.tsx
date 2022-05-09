@@ -1,22 +1,23 @@
 import { toDataUrl } from 'myetherwallet-blockies'
 import React, { ReactElement } from 'react'
-import styles from './Blockies.module.css'
+import styles from './Avatar.module.css'
 
-export default function Blockies({
+export default function Avatar({
   accountId,
+  ensAvatar,
   className
 }: {
   accountId: string
+  ensAvatar?: string
   className?: string
 }): ReactElement {
   if (!accountId) return null
-  const blockies = toDataUrl(accountId)
 
   return (
     <img
-      className={`${className || ''} ${styles.blockies} `}
-      src={blockies}
-      alt="Blockies"
+      className={`${className || ''} ${styles.avatar} `}
+      src={ensAvatar || toDataUrl(accountId)}
+      alt="Avatar"
       aria-hidden="true"
     />
   )

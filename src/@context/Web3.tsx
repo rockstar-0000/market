@@ -13,7 +13,7 @@ import { infuraProjectId as infuraId, portisId } from '../../app.config'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { isBrowser } from '@utils/index'
-import { getEnsName } from '@utils/ens'
+import { getEnsProfile } from '@utils/ens'
 import { getOceanBalance } from '@utils/ocean'
 import useNetworkMetadata, {
   getNetworkDataById,
@@ -30,6 +30,7 @@ interface Web3ProviderValue {
   web3ProviderInfo: IProviderInfo
   accountId: string
   accountEns: string
+  accountEnsAvatar: string
   balance: UserBalance
   networkId: number
   chainId: number
@@ -104,6 +105,7 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   const [isTestnet, setIsTestnet] = useState<boolean>()
   const [accountId, setAccountId] = useState<string>()
   const [accountEns, setAccountEns] = useState<string>()
+  const [accountEnsAvatar, setAccountEnsAvatar] = useState<string>()
   const [web3Loading, setWeb3Loading] = useState<boolean>(true)
   const [balance, setBalance] = useState<UserBalance>({
     eth: '0',
@@ -167,23 +169,27 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   }, [accountId, networkId, web3])
 
   // -----------------------------------
-  // Helper: Get user ENS name
+  // Helper: Get user ENS info
   // -----------------------------------
-  const getUserEnsName = useCallback(async () => {
-    if (!accountId || !web3Provider) return
+  const getUserEns = useCallback(async () => {
+    if (!accountId) return
 
     try {
-      const accountEns = await getEnsName(accountId, web3Provider)
-      setAccountEns(accountEns)
-      accountEns &&
-        LoggerInstance.log(
-          `[web3] ENS name found for ${accountId}:`,
-          accountEns
-        )
+      const { name, avatar } = await getEnsProfile(accountId)
+
+      if (name) {
+        setAccountEns(name)
+        LoggerInstance.log(`[web3] ENS name found for ${accountId}:`, name)
+      }
+
+      if (avatar) {
+        setAccountEnsAvatar(avatar)
+        LoggerInstance.log(`[web3] ENS avatar found for ${accountId}:`, avatar)
+      }
     } catch (error) {
       LoggerInstance.error('[web3] Error: ', error.message)
     }
-  }, [accountId, web3Provider])
+  }, [accountId])
 
   // -----------------------------------
   // Create initial Web3Modal instance
@@ -237,11 +243,11 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   }, [getUserBalance])
 
   // -----------------------------------
-  // Get and set user ENS name
+  // Get and set user ENS info
   // -----------------------------------
   useEffect(() => {
-    getUserEnsName()
-  }, [getUserEnsName])
+    getUserEns()
+  }, [getUserEns])
 
   // -----------------------------------
   // Get and set network metadata
@@ -360,6 +366,7 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
         web3ProviderInfo,
         accountId,
         accountEns,
+        accountEnsAvatar,
         balance,
         networkId,
         chainId,
