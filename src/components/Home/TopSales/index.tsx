@@ -17,20 +17,20 @@ export default function TopSales({
   const [loading, setLoading] = useState<boolean>()
 
   useEffect(() => {
+    if (chainIds.length === 0) {
+      setResult([])
+      setLoading(false)
+      return
+    }
+
     async function init() {
-      if (chainIds.length === 0) {
-        const result: UserSales[] = []
-        setResult(result)
+      try {
+        setLoading(true)
+        const publishers = await getTopAssetsPublishers(chainIds)
+        setResult(publishers)
         setLoading(false)
-      } else {
-        try {
-          setLoading(true)
-          const publishers = await getTopAssetsPublishers(chainIds)
-          setResult(publishers)
-          setLoading(false)
-        } catch (error) {
-          // Logger.error(error.message)
-        }
+      } catch (error) {
+        // Logger.error(error.message)
       }
     }
     init()
