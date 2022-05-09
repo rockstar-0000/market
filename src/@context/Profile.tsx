@@ -72,9 +72,7 @@ function ProfileProvider({
   //
   // User profile: ENS
   //
-  const [profile, setProfile] = useState<Profile>({
-    name: accountEns || accountId
-  })
+  const [profile, setProfile] = useState<Profile>({ name: accountEns })
 
   useEffect(() => {
     if (!accountEns) return
@@ -93,7 +91,7 @@ function ProfileProvider({
       LoggerInstance.log(`[profile] ENS metadata for ${accountId}:`, profile)
     }
     getInfo()
-  }, [accountId, accountEns, isEthAddress])
+  }, [accountId, isEthAddress])
 
   //
   // POOL SHARES
