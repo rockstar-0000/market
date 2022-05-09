@@ -1,10 +1,11 @@
 import { useUserPreferences } from '@context/UserPreferences'
-import AccountList from '@shared/AccountList/AccountList'
+import AccountList from 'src/components/Home/TopSales/AccountList'
 import { getTopAssetsPublishers } from '@utils/subgraph'
 import React, { ReactElement, useEffect, useState } from 'react'
-import styles from './Home.module.css'
+import { UserSalesQuery_users as UserSales } from 'src/@types/subgraph/UserSalesQuery'
+import styles from './index.module.css'
 
-export default function PublishersWithMostSales({
+export default function TopSales({
   title,
   action
 }: {
@@ -12,13 +13,13 @@ export default function PublishersWithMostSales({
   action?: ReactElement
 }): ReactElement {
   const { chainIds } = useUserPreferences()
-  const [result, setResult] = useState<AccountTeaserVM[]>([])
+  const [result, setResult] = useState<UserSales[]>([])
   const [loading, setLoading] = useState<boolean>()
 
   useEffect(() => {
     async function init() {
       if (chainIds.length === 0) {
-        const result: AccountTeaserVM[] = []
+        const result: UserSales[] = []
         setResult(result)
         setLoading(false)
       } else {

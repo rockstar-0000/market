@@ -13,7 +13,7 @@
 }
 
 .link {
-  composes: box from '../atoms/Box.module.css';
+  composes: box from '@shared/atoms/Box.module.css';
   padding: calc(var(--spacer) / 2) !important;
   font-size: var(--font-size-mini);
   height: 90%;

@@ -15,7 +15,8 @@ import {
 import { OrdersData_orders as OrdersData } from '../@types/subgraph/OrdersData'
 import { UserSalesQuery as UsersSalesList } from '../@types/subgraph/UserSalesQuery'
 import { OpcFeesQuery as OpcFeesData } from '../@types/subgraph/OpcFeesQuery'
-import { calcSingleOutGivenPoolIn, getLiquidityByShares } from './pool'
+import { UserSalesQuery_users as UserSales } from 'src/@types/subgraph/UserSalesQuery'
+import { calcSingleOutGivenPoolIn } from './pool'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from './constants'
 
@@ -441,8 +442,8 @@ export async function getUserSales(
 export async function getTopAssetsPublishers(
   chainIds: number[],
   nrItems = 9
-): Promise<AccountTeaserVM[]> {
-  const publisherSales: AccountTeaserVM[] = []
+): Promise<UserSales[]> {
+  const publisherSales: UserSales[] = []
 
   for (const chain of chainIds) {
     const queryContext = getQueryContext(Number(chain))
@@ -453,22 +454,20 @@ export async function getTopAssetsPublishers(
     )
     for (let i = 0; i < fetchedUsers.data.users.length; i++) {
       const publishersIndex = publisherSales.findIndex(
-        (user) => fetchedUsers.data.users[i].id === user.address
+        (user) => fetchedUsers.data.users[i].id === user.id
       )
       if (publishersIndex === -1) {
-        const publisher: AccountTeaserVM = {
-          address: fetchedUsers.data.users[i].id,
-          nrSales: fetchedUsers.data.users[i].totalSales
-        }
+        const { id, totalSales } = fetchedUsers.data.users[i]
+        const publisher: UserSales = { id, totalSales, __typename: 'User' }
         publisherSales.push(publisher)
       } else {
-        publisherSales[publishersIndex].nrSales +=
-          publisherSales[publishersIndex].nrSales
+        publisherSales[publishersIndex].totalSales +=
+          publisherSales[publishersIndex].totalSales
       }
     }
   }
 
-  publisherSales.sort((a, b) => b.nrSales - a.nrSales)
+  publisherSales.sort((a, b) => b.totalSales - a.totalSales)
 
   return publisherSales.slice(0, nrItems)
 }

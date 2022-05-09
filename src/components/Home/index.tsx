@@ -10,10 +10,11 @@ import {
 import { getHighestLiquidityDatatokens } from '@utils/subgraph'
 import { Asset, LoggerInstance } from '@oceanprotocol/lib'
 import { useUserPreferences } from '@context/UserPreferences'
-import styles from './index.module.css'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { SortTermOptions } from '../../@types/aquarius/SearchQuery'
+import TopSales from './TopSales'
+import styles from './index.module.css'
 
 async function getQueryHighest(
   chainIds: number[]
@@ -153,6 +154,8 @@ export default function HomePage(): ReactElement {
           </Button>
         }
       />
+
+      {/* <TopSales title="Top Sales" /> */}
     </>
   )
 }
